@@ -1,17 +1,15 @@
-!checkpoints
-checkpoints/*.pth
-!results
-!Examples
-*.zip
-unused
-__pycache__
-*.pyc
-models/__pycache__
-models/*.pyc
-data/__pycache__
-data/*.pyc
-*.png
-!Examples/*.png
-!imgs/*.png
+# python cache file
+**/__pycache__
+**/*.pyc
+
+# debris
+checkpoints/
+results/
+Examples/
 venv/
 weight/
+**/*.png
+**/*.zip
+
+# vscode setting
+.vscode/

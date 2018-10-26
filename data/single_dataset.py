@@ -1,6 +1,10 @@
 import os.path
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+
 from data.base_dataset import BaseDataset, get_transform
 from data.image_folder import make_dataset
+from data.image_folder import is_image_file
 from PIL import Image
 import cv2
 
@@ -57,6 +61,46 @@ class RealDataset(BaseDataset):
 
     def name(self):
         return 'RealDataset'
+
+
+class KITTIDataset(BaseDataset):
+    def initialize(self, opt):
+        self.opt = opt
+        self.root = opt.data_directory
+        self.data_dir = os.path.join(opt.data_directory, "kitti")
+
+        self.A_paths = sorted(self.make_kitti_dataset(self.data_dir))
+
+        self.transform = get_transform(opt)
+
+    def make_kitti_dataset(self, dir):
+        images = []
+        assert os.path.isdir(dir), '%s is not a valid directory' % dir
+
+        for root, _, fnames in sorted(os.walk(dir)):
+            
+            for fname in fnames:
+                if is_image_file(fname) and (root.find('image_02') >= 0):
+                    path = os.path.join(root, fname)
+                    images.append(path)
+
+        return images
+
+    def __getitem__(self, index):
+        A_path = self.A_paths[index]
+        A_img = Image.open(A_path).convert('RGB')
+        A_size = A_img.size
+
+        A = self.transform(A_img)
+
+        return {'A': A, 'A_paths': A_path, 'A_sizes': A_size}
+
+    def __len__(self):
+        return len(self.A_paths)
+
+    def name(self):
+        return 'RealDataset'
+
 
 
 class SyntheticDataset(BaseDataset):
