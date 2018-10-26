@@ -34,6 +34,15 @@ def CreateRealDataset(args):
     return dataset
 
 
+def CreateKITTIDataset(args):
+    dataset = None
+    from data.single_dataset import KITTIDataset
+    dataset = KITTIDataset()
+    print("The kitti dataset has been created")
+    dataset.initialize(args)
+    return dataset
+
+
 def CreateSyntheticDataset(args):
     dataset = None
     from data.single_dataset import SyntheticDataset
@@ -98,6 +107,35 @@ class RealDatasetDataLoader(BaseDataLoader):
         data = self.dataset[index]
         return data
 
+
+class KITTIDatasetDataLoader(BaseDataLoader):
+    def name(self):
+        return 'KITTIDatasetDataLoader'
+
+    def initialize(self, args):
+        BaseDataLoader.initialize(self, args)
+        self.dataset = CreateKITTIDataset(args)
+        self.dataloader = torch.utils.data.DataLoader(
+            self.dataset,
+            batch_size=args.batchSize,
+            shuffle=False,
+            num_workers=32)
+
+    def load_data(self):
+        return self
+
+    def __len__(self):
+        return min(len(self.dataset), self.args.max_dataset_size)
+
+    def __iter__(self):
+        for i, data in enumerate(self.dataloader):
+            if i >= self.args.max_dataset_size:
+                break
+            yield data
+
+    def __getitem__(self, index):
+        data = self.dataset[index]
+        return data
 
 
 class SyntheticDatasetDataLoader(BaseDataLoader):
