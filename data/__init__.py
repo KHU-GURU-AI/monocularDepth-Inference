@@ -12,6 +12,11 @@ def CreateRealLoader(args):
     data_loader.initialize(args)
     return data_loader
 
+def CreateKITTILoader(args):
+    data_loader = KITTIDatasetDataLoader()
+    data_loader.initialize(args)
+    return data_loader
+
 def CreateSyntheticLoader(args):
     data_loader = SyntheticDatasetDataLoader()
     data_loader.initialize(args)
