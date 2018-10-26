@@ -17,7 +17,7 @@ class TestModel(BaseModel):
         self.input_A = self.Tensor(1, 3, 1024, 256)
 
         self.netG_AtoB = networks.define_G(3, 3, 64, 'resnet_9blocks', 'instance', False, args.init_type, self.gpu_ids)
-        self.netG_BtoC = networks.define_G(3, 1, 64, 'unet_256', 'batch', False, args.init_type, self.gpu_ids)
+        self.netG_BtoC = networks.define_G(3, 1, 64, 'unet_128', 'instance', False, args.init_type, self.gpu_ids)
 
         checkpoint_AtoB_filename = 'netG_A2B.pth'
         checkpoint_BtoC_filename = 'netG_B2C.pth'
@@ -25,23 +25,25 @@ class TestModel(BaseModel):
         checkpoint_path_AtoB = os.path.join(args.checkpoints_dir, checkpoint_AtoB_filename)
         checkpoint_path_BtoC = os.path.join(args.checkpoints_dir, checkpoint_BtoC_filename)
 
-        self.netG_AtoB.load_state_dict(torch.load(checkpoint_path_AtoB))
+        # self.netG_AtoB.load_state_dict(torch.load(checkpoint_path_AtoB))
         self.netG_BtoC.load_state_dict(torch.load(checkpoint_path_BtoC))
 
     def set_input(self, input):
-        self.image_sizes = input['A_sizes']
+        self.image_sizes = input['B_sizes']
 
-        input_A = input['A']
+        input_A = input['B']
         self.input_A.resize_(input_A.size()).copy_(input_A)
-        self.image_paths = input['A_paths']
+        self.image_paths = input['B_paths']
 
         self.size = (int(self.image_sizes[0]), int(self.image_sizes[1]))
 
 
     def test(self):
+        # self.real_A = Variable(self.input_A)
+        # self.fake_B = self.netG_AtoB(self.real_A)
+        # self.fake_C = self.netG_BtoC(self.fake_B)
         self.real_A = Variable(self.input_A)
-        self.fake_B = self.netG_AtoB(self.real_A)
-        self.fake_C = self.netG_BtoC(self.fake_B)
+        self.fake_C = self.netG_BtoC(self.real_A)
 
     def get_image_paths(self):
         return self.image_paths
@@ -51,7 +53,8 @@ class TestModel(BaseModel):
 
     def get_current_visuals(self):
         real_A = util.tensor2im(self.real_A.data)
-        fake_B = util.tensor2im(self.fake_B.data)
+        # fake_B = util.tensor2im(self.fake_B.data)
         fake_C = util.tensor2im(self.fake_C.data)
 
-        return OrderedDict([('original', real_A), ('restyled', fake_B), ('depth', fake_C)])
+        # return OrderedDict([('original', real_A), ('restyled', fake_B), ('depth', fake_C)])
+        return OrderedDict([('original', real_A), ('depth', fake_C)])

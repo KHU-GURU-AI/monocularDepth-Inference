@@ -65,7 +65,7 @@ def define_D(input_nc, ndf, which_model_netD,
 
 class GANLoss(nn.Module):
     def __init__(self, use_lsgan=True, target_real_label=1.0, target_fake_label=0.0,
-                 tensor=torch.FloatTensor):
+                 tensor=torch.cuda.FloatTensor):
         super(GANLoss, self).__init__()
         self.real_label = target_real_label
         self.fake_label = target_fake_label

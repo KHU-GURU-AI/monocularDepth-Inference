@@ -24,4 +24,6 @@ def get_transform(opt):
     return transforms.Compose(transform_list)
 
 def __scale_to_256_factor(img):
-    return img.resize((1024, 256), Image.BICUBIC)
+    # return img.resize((412, 120), Image.BICUBIC)
+    # return img.resize((1024, 256), Image.BICUBIC)
+    return img.resize((512, 128), Image.BICUBIC)

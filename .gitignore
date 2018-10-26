@@ -13,4 +13,5 @@ data/*.pyc
 *.png
 !Examples/*.png
 !imgs/*.png
-
+venv/
+weight/
